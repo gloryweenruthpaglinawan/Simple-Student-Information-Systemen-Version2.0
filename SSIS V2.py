@@ -48,6 +48,14 @@ def main():
         result = [i[0] for i in result]
         return result
 
+    def cnlist():
+        conn = sqlite3.connect("StudentsList.db")
+        c = conn.cursor()
+        c.execute('''SELECT COURSE FROM courselist''')
+        result = c.fetchall()
+        result = [i[0] for i in result]
+        return result
+
     def register():
         if E1.get() == '':
             return messagebox.showwarning("WARNING!", "PLEASE TRY TO COMPLETE THE INPUT")
@@ -109,11 +117,95 @@ def main():
 
         filled_table()
 
-        course_code["values"] = cclist()
+        course_code['values'] = cclist()
         root_coursecode['values'] = cclist()
+        edlt_coursecode['values'] = cclist()
+        edlt_course['values'] = cnlist()
 
         reg_coursecode.delete(0, END)
         reg_course.delete(0, END)
+
+    def course_edit():
+        if edlt_coursecode.get() == '':
+            return messagebox.showwarning("WARNING!", "PLEASE TRY TO COMPLETE THE INPUT")
+        elif edlt_course.get() == '':
+            return messagebox.showwarning("WARNING!", "PLEASE TRY TO COMPLETE THE INPUT")
+
+        conn = sqlite3.connect('StudentsList.db')
+        c = conn.cursor()
+        data6 = edlt_coursecode.get()
+        data7 = edlt_course.get()
+
+        c.execute("UPDATE courselist set COURSE_CODE=?, COURSE=?  WHERE COURSE_CODE=? ",
+            (data6, data7, data6))
+
+        conn.commit()
+        messagebox.showinfo("COURSE EDIT INFO", "YEHEY! COURSE EDITED!")
+        conn.close()
+
+        filled_table()
+
+        course_code['values'] = cclist()
+        root_coursecode['values'] = cclist()
+
+        edlt_coursecode['values'] = cclist()
+        edlt_course['values'] = cnlist()
+
+        edlt_coursecode.delete(0, END)
+        edlt_course.delete(0, END)
+
+    def course_list():
+        top = Tk()
+        top.title("COURSE LIST")
+        w = 370
+        h = 250
+        top.geometry(f'{w}x{h}+{970}+{380}')
+        top.config(bg='black')
+        top.resizable(False, False)
+
+        def delete():
+            selected_item = tree1.focus()
+
+            if selected_item == "":
+                messagebox.showwarning("ERROR!", "PLEASE SELECT INFORMATION TO DELETE")
+                top.lift()
+            else:
+                if messagebox.askyesno("DELETE CONFIRMATION", "ARE YOU SURE?") == False:
+                    return
+                else:
+                    messagebox.showinfo("DELETE CONFIRMATION", "DATA SUCCESSFULLY DELETED")
+                    conn = sqlite3.connect("StudentsList.db")
+                    c = conn.cursor()
+                    for selected_item in tree1.selection():
+                        c.execute("DELETE FROM courselist WHERE COURSE_CODE=?", (tree1.set(selected_item, '#1'),))
+                        conn.commit()
+                        tree1.delete(selected_item)
+                    conn.close()
+                    top.lift()
+
+        conn = sqlite3.connect("StudentsList.db")
+        c = conn.cursor()
+        c.execute("SELECT * FROM courselist")
+        courses = c.fetchall()
+
+        Course_Dlt = Button(top, text="DELETE", font=("Lucida Console", 12, "bold"), command=delete)
+        Course_Dlt.place(x=145, y=215)
+
+        frm = Frame(top)
+        frm.pack(side=LEFT, padx=0, pady=(0, 40))
+
+        tree1 = ttk.Treeview(frm, columns=(1, 2), show="headings", height=9)
+        tree1.pack()
+
+        tree1.heading(1, text="COURSE CODE", anchor=CENTER)
+        tree1.column("1", minwidth=0, width=120)
+        tree1.heading(2, text="COURSE", anchor=CENTER)
+        tree1.column("2", minwidth=0, width=245)
+
+        for i in courses:
+            tree1.insert('', 'end', value=i)
+
+        top.mainloop()
 
     def select():
         conn = sqlite3.connect('StudentsList.db')
@@ -166,6 +258,12 @@ def main():
         conn.commit()
         conn.close()
         filled_table()
+
+        E3.delete(0, END)
+        E4.delete(0, END)
+        root_gender.set("Select Gender")
+        root_yearlvl.set("Select Year Level")
+        root_coursecode.set("Select Course Code")
 
     def delete():
         selected_item = tree.focus()
@@ -232,9 +330,12 @@ def main():
     Upd_Del = LabelFrame(root, text="Update and Delete Form", width=500, height=200, bg="black", fg="white",
                          font=("Lucida Console", 15, "bold"))
     Upd_Del.place(x=0, y=0)
-    Course = LabelFrame(root, text="Course Registration Form", width=385, height=200, bg="black", fg="white",
+    Course = LabelFrame(root, text="Course Registration Form", width=385, height=100, bg="black", fg="white",
                      font=("Lucida Console", 15, "bold"))
     Course.place(x=965, y=0)
+    Course_Edlt = LabelFrame(root, text="Course Edit/Delete Form", width=385, height=100, bg="black", fg="white",
+                        font=("Lucida Console", 15, "bold"))
+    Course_Edlt.place(x=965, y=100)
 
     L1 = Label(root, text="ID NUMBER:", bg="black", fg="white", font=("Lucida Console", 11, "bold"))
     L1.place(x=510, y=35)
@@ -267,6 +368,7 @@ def main():
     course_code['values'] = cclist()
     course_code.place(x=650, y=135)
 
+    #BUTTONS
     Sel = Button(root, text="SELECT", font=("Lucida Console", 9, "bold"), command=select)
     Sel.place(x=300, y=15)
     Upd = Button(root, text="UPDATE", font=("Lucida Console", 9, "bold"), command=update)
@@ -278,7 +380,11 @@ def main():
     Reg = Button(root, text="REGISTER", font=("Lucida Console", 9, "bold"), command=register)
     Reg.place(x=865, y=170)
     Course_Reg = Button(root, text="REGISTER", font=("Lucida Console", 9, "bold"), command=course_reg)
-    Course_Reg.place(x=1250, y=170)
+    Course_Reg.place(x=1270, y=75)
+    Course_Edt = Button(root, text="EDIT", font=("Lucida Console", 9, "bold"), command=course_edit)
+    Course_Edt.place(x=1300, y=175)
+    Course_Lst = Button(root, text="COURSE LIST", font=("Lucida Console", 9, "bold"), command=course_list)
+    Course_Lst.place(x=970, y=175)
 
     conn = sqlite3.connect('StudentsList.db')
     c = conn.cursor()
@@ -341,15 +447,32 @@ def main():
     L11 = Label(root, text="COURSE CODE:", bg="black", fg="white", font=("Lucida Console", 11, "bold"))
     L11.place(x=5, y=150)
 
+    #COURSE REGISTRATION FORM
     L12 = Label(root, text="COURSE CODE:", bg="black", fg="white", font=("Lucida Console", 11, "bold"))
-    L12.place(x=970, y=80)
+    L12.place(x=970, y=25)
     L13 = Label(root, text="COURSE:", bg="black", fg="white", font=("Lucida Console", 11, "bold"))
-    L13.place(x=970, y=105)
+    L13.place(x=970, y=50)
 
     reg_coursecode = Entry(root, bd=2, width=27, font=("Lucida Console", 10))
-    reg_coursecode.place(x=1100, y=80)
+    reg_coursecode.place(x=1100, y=25)
     reg_course = Entry(root, bd=2, width=27, font=("Lucida Console", 10))
-    reg_course.place(x=1100, y=105)
+    reg_course.place(x=1100, y=50)
+
+    #COURSE EDIT/EDIT FORM
+    L14 = Label(root, text="COURSE CODE:", bg="black", fg="white", font=("Lucida Console", 11, "bold"))
+    L14.place(x=970, y=125)
+    L15 = Label(root, text="COURSE:", bg="black", fg="white", font=("Lucida Console", 11, "bold"))
+    L15.place(x=970, y=150)
+
+    edlt_coursecode = ttk.Combobox(root, width=25, font=("Lucida Console", 10))
+    edlt_coursecode.set("Select Course Code")
+    edlt_coursecode['values'] = cclist()
+    edlt_coursecode.place(x=1100, y=125)
+
+    edlt_course = ttk.Combobox(root, width=25, font=("Lucida Console", 10))
+    edlt_course.set("Select Course Name")
+    edlt_course['values'] = cnlist()
+    edlt_course.place(x=1100, y=150)
 
     conn.commit()
     conn.close()
