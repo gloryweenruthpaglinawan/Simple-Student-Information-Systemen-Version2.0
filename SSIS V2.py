@@ -183,6 +183,15 @@ def main():
                         conn.commit()
                         tree1.delete(selected_item)
                     conn.close()
+
+                    filled_table()
+
+                    course_code['values'] = cclist()
+                    root_coursecode['values'] = cclist()
+
+                    edlt_coursecode['values'] = cclist()
+                    edlt_course['values'] = cnlist()
+
                     top.lift()
 
         conn = sqlite3.connect("StudentsList.db")
