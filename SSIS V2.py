@@ -3,6 +3,7 @@ import sqlite3
 from tkinter import ttk
 from tkinter import messagebox
 
+
 def main():
     root = Tk()
     root.title("STUDENT INFORMATION SYSTEM")
@@ -137,7 +138,7 @@ def main():
         data7 = edlt_course.get()
 
         c.execute("UPDATE courselist set COURSE_CODE=?, COURSE=?  WHERE COURSE_CODE=? ",
-            (data6, data7, data6))
+                  (data6, data7, data6))
 
         conn.commit()
         messagebox.showinfo("COURSE EDIT INFO", "YEHEY! COURSE EDITED!")
@@ -168,11 +169,13 @@ def main():
 
             if selected_item == "":
                 messagebox.showwarning("ERROR!", "PLEASE SELECT INFORMATION TO DELETE")
+                top.lift()
             else:
                 if messagebox.askyesno("DELETE CONFIRMATION", "ARE YOU SURE?") == False:
                     return
                 else:
                     messagebox.showinfo("DELETE CONFIRMATION", "DATA SUCCESSFULLY DELETED")
+                    top.lift()
                     conn = sqlite3.connect("StudentsList.db")
                     c = conn.cursor()
                     for selected_item in tree1.selection():
@@ -294,7 +297,8 @@ def main():
         c = conn.cursor()
 
         c.execute("""SELECT ID_NUMBER, NAME, GENDER, YEAR_LEVEL, courselist.COURSE_CODE, courselist.COURSE FROM studentlist
-                       INNER JOIN courselist ON courselist.COURSE_CODE = studentlist.COURSE_CODE WHERE ID_NUMBER=?""", (E3.get(),))
+                       INNER JOIN courselist ON courselist.COURSE_CODE = studentlist.COURSE_CODE WHERE ID_NUMBER=?""",
+                  (E3.get(),))
         records = c.fetchall()
 
         frm = Frame(root1)
@@ -322,8 +326,8 @@ def main():
             messagebox.showinfo("SEARCH INFORMATION", "STUDENT DOESN'T EXIST or ENTER ID NUMBER")
 
         root1.mainloop()
-    
-    #LABEL FRAMES
+
+    # LABEL FRAMES
     Reg = LabelFrame(root, text="Registration Form", width=465, height=200, bg="black", fg="white",
                      font=("Lucida Console", 15, "bold"))
     Reg.place(x=500, y=0)
@@ -331,13 +335,13 @@ def main():
                          font=("Lucida Console", 15, "bold"))
     Upd_Del.place(x=0, y=0)
     Course = LabelFrame(root, text="Course Registration Form", width=385, height=100, bg="black", fg="white",
-                     font=("Lucida Console", 15, "bold"))
+                        font=("Lucida Console", 15, "bold"))
     Course.place(x=965, y=0)
     Course_Edlt = LabelFrame(root, text="Course Edit/Delete Form", width=385, height=100, bg="black", fg="white",
-                        font=("Lucida Console", 15, "bold"))
+                             font=("Lucida Console", 15, "bold"))
     Course_Edlt.place(x=965, y=100)
-    
-    #REGISTRATION LABELS
+
+    # REGISTRATION LABELS
     L1 = Label(root, text="ID NUMBER:", bg="black", fg="white", font=("Lucida Console", 11, "bold"))
     L1.place(x=510, y=35)
     L2 = Label(root, text="NAME:", bg="black", fg="white", font=("Lucida Console", 11, "bold"))
@@ -348,8 +352,8 @@ def main():
     L4.place(x=510, y=110)
     L5 = Label(root, text="COURSE CODE:", bg="black", fg="white", font=("Lucida Console", 11, "bold"))
     L5.place(x=510, y=135)
-    
-    #REGISTRATION ENTRIES 
+
+    # REGISTRATION ENTRIES
     E1 = Entry(root, bd=2, width=27, font=("Lucida Console", 10))
     E1.place(x=650, y=35)
     E2 = Entry(root, bd=2, width=27, font=("Lucida Console", 10))
@@ -370,7 +374,7 @@ def main():
     course_code['values'] = cclist()
     course_code.place(x=650, y=135)
 
-    #BUTTONS
+    # BUTTONS
     Sel = Button(root, text="SELECT", font=("Lucida Console", 9, "bold"), command=select)
     Sel.place(x=300, y=15)
     Upd = Button(root, text="UPDATE", font=("Lucida Console", 9, "bold"), command=update)
@@ -417,8 +421,8 @@ def main():
 
     for i in records:
         tree.insert('', 'end', value=i)
-    
-    #UPDATE AND DELETE ENTRIES
+
+    # UPDATE AND DELETE ENTRIES
     E3 = Entry(root, bd=2, width=27, font=("Lucida Console", 10))
     E3.place(x=200, y=40)
     E4 = Entry(root, bd=2, width=27, font=("Lucida Console", 10))
@@ -438,8 +442,8 @@ def main():
     root_coursecode.set("Select Course Code")
     root_coursecode['values'] = cclist()
     root_coursecode.place(x=130, y=150)
-    
-    #UPDATE AND DELETE LABELS
+
+    # UPDATE AND DELETE LABELS
     L7 = Label(root, text="ID NUMBER TO FIND:", bg="black", fg="white", font=("Lucida Console", 11, "bold"))
     L7.place(x=5, y=38)
     L8 = Label(root, text="NAME:", bg="black", fg="white", font=("Lucida Console", 11, "bold"))
@@ -451,24 +455,24 @@ def main():
     L11 = Label(root, text="COURSE CODE:", bg="black", fg="white", font=("Lucida Console", 11, "bold"))
     L11.place(x=5, y=150)
 
-    #COURSE REGISTRATION LABELS
+    # COURSE REGISTRATION LABELS
     L12 = Label(root, text="COURSE CODE:", bg="black", fg="white", font=("Lucida Console", 11, "bold"))
     L12.place(x=970, y=25)
     L13 = Label(root, text="COURSE:", bg="black", fg="white", font=("Lucida Console", 11, "bold"))
     L13.place(x=970, y=50)
 
-    #COURSE REGISTRATION ENRTRIES
+    # COURSE REGISTRATION ENRTRIES
     reg_coursecode = Entry(root, bd=2, width=27, font=("Lucida Console", 10))
     reg_coursecode.place(x=1100, y=25)
     reg_course = Entry(root, bd=2, width=27, font=("Lucida Console", 10))
     reg_course.place(x=1100, y=50)
 
-    #COURSE EDIT/DELETE LABELS
+    # COURSE EDIT/DELETE LABELS
     L14 = Label(root, text="COURSE CODE:", bg="black", fg="white", font=("Lucida Console", 11, "bold"))
     L14.place(x=970, y=125)
     L15 = Label(root, text="COURSE:", bg="black", fg="white", font=("Lucida Console", 11, "bold"))
     L15.place(x=970, y=150)
-    
+
     ##COURSE EDIT/DELETE ENRTRIES
     edlt_coursecode = ttk.Combobox(root, width=25, font=("Lucida Console", 10))
     edlt_coursecode.set("Select Course Code")
