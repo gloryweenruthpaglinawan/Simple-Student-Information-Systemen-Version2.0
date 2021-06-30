@@ -168,7 +168,6 @@ def main():
 
             if selected_item == "":
                 messagebox.showwarning("ERROR!", "PLEASE SELECT INFORMATION TO DELETE")
-                top.lift()
             else:
                 if messagebox.askyesno("DELETE CONFIRMATION", "ARE YOU SURE?") == False:
                     return
